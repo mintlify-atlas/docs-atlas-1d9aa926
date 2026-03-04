@@ -1,0 +1,59 @@
+{
+  "projectType": "general",
+  "projectName": "Asimov",
+  "projectDescription": "Open-source bipedal robotic legs for humanoid robots built with off-the-shelf components.",
+  "theme": "aspen",
+  "primaryColor": "#fc5c04",
+  "lightColor": null,
+  "darkColor": null,
+  "navigation": {
+    "groups": [
+      {
+        "group": "Overview",
+        "pages": [
+          "introduction",
+          "specifications"
+        ]
+      },
+      {
+        "group": "Hardware",
+        "pages": [
+          "hardware/mechanical-design",
+          "hardware/motors",
+          "hardware/ankle-mechanism"
+        ]
+      },
+      {
+        "group": "Simulation",
+        "pages": [
+          "simulation/overview",
+          "simulation/mujoco-model"
+        ]
+      },
+      {
+        "group": "Resources",
+        "pages": [
+          "resources/downloads",
+          "resources/community",
+          "resources/support"
+        ]
+      }
+    ]
+  },
+  "keyFeatures": [
+    "12 DOF actuation (6 DOF per leg)",
+    "RSU ankle mechanism with pitch/roll coupling",
+    "Articulated toe design",
+    "MJF 3D printing compatible",
+    "MuJoCo simulation model",
+    "Off-the-shelf motor components"
+  ],
+  "publicApiSurface": [
+    "Left leg joints: L_Hip_Pitch, L_Hip_Roll, L_Hip_Yaw, L_Knee_Pitch, L_Ankle_A, L_Ankle_B",
+    "Right leg joints: R_Hip_Pitch, R_Hip_Roll, R_Hip_Yaw, R_Knee_Pitch, R_Ankle_A, R_Ankle_B",
+    "Motors: EC-A6416-P2-25 (Hip Pitch), EC-A5013-H17-100 (Hip Roll), EC-A3814-H14-107 (Hip Yaw), EC-A4315-P2-36 (Knee), EC-A4310-P2-36 (Ankle)",
+    "CAD file: ASV0_lowerBody.STEP",
+    "MuJoCo model: asimov.xml",
+    "STL meshes for simulation"
+  ]
+}
