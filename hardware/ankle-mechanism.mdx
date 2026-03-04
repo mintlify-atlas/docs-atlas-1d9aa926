@@ -39,7 +39,7 @@ When viewing the right leg, the vertical displacement at points A and B can be t
 
 <Steps>
   <Step title="Define vertical displacements">
-    ```r
+    ```text
     y_A = y_p + y_Ar
     y_B = y_p + y_Br
     
@@ -55,7 +55,7 @@ When viewing the right leg, the vertical displacement at points A and B can be t
   <Step title="Calculate pitch displacement">
     Observing the bar's movement relative to the ankle pivot point:
     
-    ```r
+    ```text
     y_p = d * tan(theta_p)
     
     where:
@@ -67,7 +67,7 @@ When viewing the right leg, the vertical displacement at points A and B can be t
   <Step title="Calculate roll displacement">
     A negative roll causes point B to move down and point A to move up:
     
-    ```r
+    ```text
     y_Ar = -(c / 2) * sin(theta_r)
     y_Br =  (c / 2) * sin(theta_r)
     
@@ -80,7 +80,7 @@ When viewing the right leg, the vertical displacement at points A and B can be t
   <Step title="Define motor-to-linkage relationship">
     The motor rotations affect linkage height:
     
-    ```r
+    ```text
     y_A =   r_A * sin(theta_A)
     y_B = - r_B * sin(theta_B)
     
@@ -91,7 +91,7 @@ When viewing the right leg, the vertical displacement at points A and B can be t
   </Step>
   
   <Step title="Combine equations">
-    ```r
+    ```text
     r_A * sin(theta_A) = d * tan(theta_p) - (c / 2) * sin(theta_r)
     sin(theta_A) = (d / r_A) * tan(theta_p) - (c / (2 * r_A)) * sin(theta_r)
     
@@ -103,7 +103,7 @@ When viewing the right leg, the vertical displacement at points A and B can be t
   <Step title="Apply small angle approximation">
     For small angles, `sin(θ) ≈ θ` and `tan(θ) ≈ θ`:
     
-    ```r
+    ```text
     theta_A =   K_P * theta_p - K_R * theta_r
     theta_B = - K_P * theta_p - K_R * theta_r
     
@@ -144,7 +144,7 @@ float left_B = -ANKLE_COUPLING_K_PITCH * left_pitch - ANKLE_COUPLING_K_ROLL * le
   <Step title="Calculate pitch from midpoint">
     The pitch rotation is determined by the midpoint of the bar:
     
-    ```r
+    ```text
     tan(theta_p) = y_mid / d
     tan(theta_p) = (y_A + y_B) / (2 * d)  where y_mid = (y_A + y_B) / 2
     
@@ -156,7 +156,7 @@ float left_B = -ANKLE_COUPLING_K_PITCH * left_pitch - ANKLE_COUPLING_K_ROLL * le
   <Step title="Calculate roll from differential">
     Roll displacement is the vertical position relative to the midpoint:
     
-    ```r
+    ```text
     y_Ar = y_A - y_mid
     
     where:
@@ -169,7 +169,7 @@ float left_B = -ANKLE_COUPLING_K_PITCH * left_pitch - ANKLE_COUPLING_K_ROLL * le
   <Step title="Solve for roll angle">
     With algebraic manipulation:
     
-    ```r
+    ```text
     y_A - ((y_A + y_B) / 2) = -(c / 2) * sin(theta_r)
     (((y_A + y_B) / 2) - y_A) * (2 / c) = sin(theta_r)
     sin(theta_r) = (-0.5y_A + 0.5y_B) * (2 / c)
@@ -183,7 +183,7 @@ float left_B = -ANKLE_COUPLING_K_PITCH * left_pitch - ANKLE_COUPLING_K_ROLL * le
   <Step title="Apply small angle approximation">
     Assuming `r = r_A = r_B`:
     
-    ```r
+    ```text
     theta_p = (r_A * theta_A - r_B * theta_B) / (2 * d)
     theta_p = (theta_A - theta_B) * (r / (2 * d))
     
@@ -211,7 +211,7 @@ float left_roll =  -(left_A + left_B) / (2.0f * K_ROLL);
 The coupling constants relate the physical dimensions of the mechanism to the mathematical transformations:
 
 <Accordion title="K_P: Pitch Coupling Constant">
-  ```
+  ```text
   K_P = d / r
   ```
   
@@ -223,7 +223,7 @@ The coupling constants relate the physical dimensions of the mechanism to the ma
 </Accordion>
 
 <Accordion title="K_R: Roll Coupling Constant">
-  ```
+  ```text
   K_R = c / (2 * r)
   ```
   
