@@ -1,0 +1,124 @@
+---
+title: Downloads
+description: Download CAD files, simulation models, and meshes for Asimov v0
+---
+
+# Downloads
+
+All Asimov v0 design files, simulation models, and meshes are available for download. The project is released under the CERN-OHL-S-2.0 license.
+
+## CAD Files
+
+<CardGroup cols={2}>
+  <Card title="Complete Lower Body CAD" icon="cube" href="https://github.com/asimovinc/asimov-v0/tree/main/mechanical">
+    Full STEP file for the ASV0 lower body assembly including all 12 DOF actuation
+  </Card>
+  
+  <Card title="3D Visualization" icon="eye" href="https://static.asimov.inc/ASV0_LowerBody.HTML">
+    Interactive 3D view of the complete lower body assembly
+  </Card>
+</CardGroup>
+
+### Mechanical Design Files
+
+The complete mechanical design is available in the `/mechanical` directory:
+
+- **ASV0_lowerBody.STEP** - Complete lower body assembly in STEP format
+- **naming_convention.png** - Joint and component naming reference
+- **ankle_mechanism.md** - Detailed RSU (Revolute Spherical Universal) ankle mechanism documentation
+
+<Note>
+  The mechanical design is compatible with MJF (Multi Jet Fusion) 3D printing for low-volume manufacturing.
+</Note>
+
+## Simulation Models
+
+<CardGroup cols={2}>
+  <Card title="MuJoCo Model" icon="robot" href="https://github.com/asimovinc/asimov-v0/tree/main/sim-model">
+    Complete MuJoCo XML model for physics simulation
+  </Card>
+  
+  <Card title="STL Meshes" icon="shapes" href="https://github.com/asimovinc/asimov-v0/tree/main/sim-model/assets/meshes">
+    Individual STL mesh files for all components
+  </Card>
+</CardGroup>
+
+### MuJoCo XML
+
+The simulation model is located in `/sim-model/xmls/`:
+- **asimov.xml** - Complete MuJoCo simulation model with kinematics and dynamics
+
+### STL Mesh Files
+
+All component meshes are available in `/sim-model/assets/meshes/`:
+
+**Left Leg Components:**
+- left_hip_pitch_link.STL
+- left_hip_roll_link.STL
+- left_hip_yaw_link.STL
+- left_knee_link.STL
+- left_ankle_pitch_link.STL
+- left_ankle_roll_link.STL
+- left_toe_link.STL
+
+**Right Leg Components:**
+- right_hip_pitch_link.STL
+- right_hip_roll_link.STL
+- right_hip_yaw_link.STL
+- right_knee_link.STL
+- right_ankle_pitch_link.STL
+- right_ankle_roll_link.STL
+- right_toe_link.STL
+
+**Shared Components:**
+- pelvis_link.STL
+
+## GitHub Repository
+
+<Card title="Asimov v0 Repository" icon="github" href="https://github.com/asimovinc/asimov-v0">
+  Clone or download the complete source repository
+</Card>
+
+```bash
+git clone https://github.com/asimovinc/asimov-v0.git
+```
+
+## License Information
+
+<Warning>
+  Asimov v0 is licensed under **CERN-OHL-S-2.0** (CERN Open Hardware Licence Version 2 - Strongly Reciprocal).
+</Warning>
+
+The CERN-OHL-S is a strongly reciprocal open hardware license that:
+
+- **Allows** you to use, study, modify, share, and distribute the hardware designs
+- **Requires** that any modifications or derivative works be released under the same license
+- **Permits** commercial use and manufacturing
+- **Ensures** the freedom to use the design for any purpose
+
+### Key License Terms
+
+- You may copy and distribute verbatim copies of the design files
+- You may modify the designs, but must make modified sources available
+- If you manufacture and distribute products, you must provide recipients with the complete source files
+- Modified versions must be licensed under CERN-OHL-S or a compatible license
+- No warranty is provided (AS-IS basis)
+
+For the complete license text, see the [LICENSE.txt](https://github.com/asimovinc/asimov-v0/blob/main/LICENSE.txt) file in the repository.
+
+## Motor Specifications
+
+Motors are sourced from [Encos](http://encos.cn):
+
+| Joint Type | Model | Application |
+|------------|-------|-------------|
+| Hip Pitch | EC-A6416-P2-25 | Hip flexion/extension (120 Nm) |
+| Hip Roll | EC-A5013-H17-100 | Hip abduction/adduction (90 Nm) |
+| Hip Yaw | EC-A3814-H14-107 | Hip rotation (60 Nm) |
+| Knee Pitch | EC-A4315-P2-36 | Knee flexion/extension (75 Nm) |
+| Ankle A | EC-A4310-P2-36 | Ankle dorsi/plantarflexion (36 Nm) |
+| Ankle B | EC-A4310-P2-36 | Ankle inversion/eversion (36 Nm) |
+
+<Note>
+  Motor specifications and sourcing information are subject to availability. Contact the community for alternative sourcing options.
+</Note>

@@ -1,0 +1,122 @@
+---
+title: 'Mechanical Design'
+description: 'Complete mechanical structure and design specifications for Asimov bipedal legs'
+---
+
+## Overview
+
+Asimov v0 is a complete bipedal leg system for humanoid robots, featuring 12 degrees of freedom (6 DOF per leg) with an articulated toe design. The mechanical structure is built with off-the-shelf components and is fully compatible with low-volume manufacturing processes.
+
+<Note>
+  The design utilizes an RSU (Revolute Spherical Universal) ankle mechanism that provides robust ankle actuation through a coupled motor system.
+</Note>
+
+## CAD Files
+
+The complete mechanical assembly is available as a STEP file for integration into your design workflow:
+
+<Card title="3D CAD File" icon="cube" href="https://static.asimov.inc/ASV0_LowerBody.HTML">
+  **ASV0_lowerBody.STEP** - View the interactive 3D visualization of the complete lower body assembly
+</Card>
+
+### Accessing the 3D Model
+
+The 3D visualization provides an interactive view of the complete leg assembly, allowing you to:
+
+- Rotate and zoom to inspect component placement
+- Understand the spatial relationships between joints
+- Verify mounting points and clearances
+- Plan integration with upper body or torso assemblies
+
+## Naming Conventions
+
+All mechanical components follow a standardized naming convention to ensure clarity across documentation, simulation, and hardware:
+
+![Naming Convention](/images/naming_convention.png)
+
+The naming convention uses consistent prefixes:
+- **L_** prefix for left leg joints
+- **R_** prefix for right leg joints
+- Descriptive suffixes indicate joint type: **_Pitch**, **_Roll**, **_Yaw**
+
+## Joint Specifications
+
+### Left Leg
+
+| Joint Name    | Joint Type                  | Min Angle | Max Angle | Peak Torque |
+|---------------|-----------------------------|-----------|-----------|-------------|
+| L_Hip_Pitch   | Hip flexion/extension       | -120°     | +57°      | 120 Nm      |
+| L_Hip_Roll    | Hip abduction/adduction     | -45°      | +45°      | 90 Nm       |
+| L_Hip_Yaw     | Hip rotation                | -45°      | +45°      | 60 Nm       |
+| L_Knee_Pitch  | Knee flexion/extension      | 0°        | +86°      | 75 Nm       |
+| L_Ankle_A     | Ankle dorsi/plantarflexion  | -70°      | +70°      | 36 Nm       |
+| L_Ankle_B     | Ankle inversion/eversion    | -70°      | +70°      | 36 Nm       |
+
+### Right Leg
+
+| Joint Name    | Joint Type                  | Min Angle | Max Angle | Peak Torque |
+|---------------|-----------------------------|-----------|-----------|-------------|
+| R_Hip_Pitch   | Hip flexion/extension       | -57°      | +120°     | 120 Nm      |
+| R_Hip_Roll    | Hip abduction/adduction     | -45°      | +45°      | 90 Nm       |
+| R_Hip_Yaw     | Hip rotation                | -45°      | +45°      | 60 Nm       |
+| R_Knee_Pitch  | Knee flexion/extension      | -86°      | 0°        | 75 Nm       |
+| R_Ankle_A     | Ankle dorsi/plantarflexion  | -70°      | +70°      | 36 Nm       |
+| R_Ankle_B     | Ankle inversion/eversion    | -70°      | +70°      | 36 Nm       |
+
+<Note>
+  Notice the asymmetry in hip and knee joint limits between left and right legs. This is intentional to provide optimal range of motion during walking and running gaits.
+</Note>
+
+## MJF 3D Printing Compatibility
+
+All mechanical components are designed to be compatible with Multi Jet Fusion (MJF) 3D printing technology, enabling rapid prototyping and low-volume manufacturing:
+
+<Steps>
+  <Step title="Material Selection">
+    MJF-compatible parts can be printed in PA12 (Nylon 12) or PA11 materials, providing excellent mechanical properties and durability.
+  </Step>
+  
+  <Step title="Design Tolerances">
+    All clearances and fits are designed with MJF manufacturing tolerances in mind, ensuring proper assembly without post-processing.
+  </Step>
+  
+  <Step title="Surface Finish">
+    MJF parts have a slightly textured surface finish that provides good friction characteristics for assembled components.
+  </Step>
+  
+  <Step title="Production Scaling">
+    MJF technology allows for economical production of 10-1000 units, making it ideal for research labs and small-scale production.
+  </Step>
+</Steps>
+
+## Key Design Features
+
+<CardGroup cols={2}>
+  <Card title="Articulated Toe" icon="shoe-prints">
+    Provides better ground contact and push-off during walking, improving stability and efficiency.
+  </Card>
+  
+  <Card title="RSU Ankle Mechanism" icon="gears">
+    Couples two motors to provide pitch and roll motion with reduced complexity compared to traditional designs.
+  </Card>
+  
+  <Card title="Off-the-Shelf Motors" icon="motor">
+    Uses standardized Encos motor models, ensuring availability and serviceability.
+  </Card>
+  
+  <Card title="Modular Design" icon="puzzle-piece">
+    Individual joints can be serviced or replaced without disassembling the entire leg structure.
+  </Card>
+</CardGroup>
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Motor Specifications" icon="motor" href="/hardware/motors">
+    Learn about the specific motor models used in each joint
+  </Card>
+  
+  <Card title="Ankle Mechanism" icon="gears" href="/hardware/ankle-mechanism">
+    Deep dive into the RSU ankle mechanism mathematics and implementation
+  </Card>
+</CardGroup>

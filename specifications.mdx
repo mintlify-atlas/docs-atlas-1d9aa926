@@ -1,0 +1,417 @@
+---
+title: Technical Specifications
+description: Complete joint specifications, motor models, and kinematic parameters for Asimov v0
+---
+
+## Overview
+
+This page provides comprehensive technical specifications for the Asimov v0 bipedal leg platform, including joint ranges of motion, peak torque values, motor models, and physical parameters.
+
+<Note>
+  All angle measurements are provided in degrees for readability. The MuJoCo simulation model uses radians internally.
+</Note>
+
+## System Configuration
+
+<CardGroup cols={2}>
+  <Card title="Total Degrees of Freedom" icon="gear">
+    **12 DOF** - 6 per leg (Hip: 3, Knee: 1, Ankle: 2)
+  </Card>
+  <Card title="Pelvis Height" icon="ruler-vertical">
+    **739 mm** - From ground to pelvis link in neutral standing position
+  </Card>
+  <Card title="Total System Mass" icon="weight-hanging">
+    **~11.5 kg** - Both legs including all actuators and structure
+  </Card>
+  <Card title="Manufacturing" icon="industry">
+    **MJF 3D Printing** - All structural components optimized for additive manufacturing
+  </Card>
+</CardGroup>
+
+## Left Leg Joint Specifications
+
+The left leg provides six degrees of freedom with the following ranges of motion and torque capabilities:
+
+| Joint Name | Function | Min Angle | Max Angle | Range | Peak Torque | Motor Model |
+|------------|----------|-----------|-----------|-------|-------------|--------------|
+| **L_Hip_Pitch** | Hip flexion/extension | -120° | +57° | 177° | 120 Nm | EC-A6416-P2-25 |
+| **L_Hip_Roll** | Hip abduction/adduction | -45° | +45° | 90° | 90 Nm | EC-A5013-H17-100 |
+| **L_Hip_Yaw** | Hip rotation | -45° | +45° | 90° | 60 Nm | EC-A3814-H14-107 |
+| **L_Knee_Pitch** | Knee flexion/extension | 0° | +86° | 86° | 75 Nm | EC-A4315-P2-36 |
+| **L_Ankle_A** | Ankle dorsi/plantarflexion | -70° | +70° | 140° | 36 Nm | EC-A4310-P2-36 |
+| **L_Ankle_B** | Ankle inversion/eversion | -70° | +70° | 140° | 36 Nm | EC-A4310-P2-36 |
+
+<Accordion title="Left Leg Joint Details">
+  ### Hip Pitch (L_Hip_Pitch)
+  - **Axis**: Oblique axis (0, 0.70711, -0.70711) - 45° angled joint
+  - **Range**: -120° to +57° (-2.094 to 1.0 rad)
+  - **Function**: Primary forward/backward leg swing
+  - **Armature**: 0.01 kg⋅m²
+
+  ### Hip Roll (L_Hip_Roll)
+  - **Axis**: X-axis (1, 0, 0)
+  - **Range**: ±45° (±0.785 rad)
+  - **Function**: Lateral leg movement for balance and side-stepping
+
+  ### Hip Yaw (L_Hip_Yaw)
+  - **Axis**: Negative Z-axis (0, 0, -1)
+  - **Range**: ±45° (±0.785 rad)
+  - **Function**: Leg rotation for turning and directional changes
+
+  ### Knee Pitch (L_Knee_Pitch)
+  - **Axis**: Y-axis (0, 1, 0)
+  - **Range**: 0° to +86° (0 to 1.5 rad)
+  - **Function**: Leg bending for walking gait and crouching
+
+  ### Ankle A & B (RSU Mechanism)
+  - **Type**: Coupled revolute joints controlling pitch and roll
+  - **Range**: ±70° each in motor space
+  - **Actual ankle motion**: Kinematically coupled through parallel linkages
+  - See [Ankle Mechanism](#ankle-mechanism) for coupling equations
+</Accordion>
+
+## Right Leg Joint Specifications
+
+The right leg is a mirror of the left leg with corresponding ranges and capabilities:
+
+| Joint Name | Function | Min Angle | Max Angle | Range | Peak Torque | Motor Model |
+|------------|----------|-----------|-----------|-------|-------------|--------------|
+| **R_Hip_Pitch** | Hip flexion/extension | -57° | +120° | 177° | 120 Nm | EC-A6416-P2-25 |
+| **R_Hip_Roll** | Hip abduction/adduction | -45° | +45° | 90° | 90 Nm | EC-A5013-H17-100 |
+| **R_Hip_Yaw** | Hip rotation | -45° | +45° | 90° | 60 Nm | EC-A3814-H14-107 |
+| **R_Knee_Pitch** | Knee flexion/extension | -86° | 0° | 86° | 75 Nm | EC-A4315-P2-36 |
+| **R_Ankle_A** | Ankle dorsi/plantarflexion | -70° | +70° | 140° | 36 Nm | EC-A4310-P2-36 |
+| **R_Ankle_B** | Ankle inversion/eversion | -70° | +70° | 140° | 36 Nm | EC-A4310-P2-36 |
+
+<Accordion title="Right Leg Joint Details">
+  ### Hip Pitch (R_Hip_Pitch)
+  - **Axis**: Oblique axis (0, -0.70711, -0.70711) - Mirrored 45° angle
+  - **Range**: -57° to +120° (-1.0 to 2.094 rad)
+  - **Note**: Range is inverted compared to left leg due to mirrored geometry
+
+  ### Hip Roll (R_Hip_Roll)
+  - **Axis**: X-axis (1, 0, 0)
+  - **Range**: ±45° (±0.785 rad)
+  - **Identical to left leg**
+
+  ### Hip Yaw (R_Hip_Yaw)
+  - **Axis**: Negative Z-axis (0, 0, -1)
+  - **Range**: ±45° (±0.785 rad)
+  - **Identical to left leg**
+
+  ### Knee Pitch (R_Knee_Pitch)
+  - **Axis**: Negative Y-axis (0, -1, 0) - Mirrored
+  - **Range**: -86° to 0° (-1.5 to 0 rad)
+  - **Note**: Negative range due to mirrored joint orientation
+
+  ### Ankle A & B (RSU Mechanism)
+  - Same specifications as left leg
+  - Coupling equations apply identically to both legs
+</Accordion>
+
+## Motor Specifications
+
+Asimov v0 uses high-performance quasi-direct drive motors from [Encos](http://encos.cn):
+
+### Motor Models by Joint Type
+
+<AccordionGroup>
+  <Accordion title="Hip Pitch Motor - EC-A6416-P2-25">
+    - **Application**: Both L_Hip_Pitch and R_Hip_Pitch
+    - **Peak Torque**: 120 Nm
+    - **Usage**: Highest torque motor in the system for primary leg swing
+    - **Quantity**: 2 (one per leg)
+  </Accordion>
+
+  <Accordion title="Hip Roll Motor - EC-A5013-H17-100">
+    - **Application**: Both L_Hip_Roll and R_Hip_Roll
+    - **Peak Torque**: 90 Nm
+    - **Usage**: Lateral balance and side-to-side movement
+    - **Quantity**: 2 (one per leg)
+  </Accordion>
+
+  <Accordion title="Hip Yaw Motor - EC-A3814-H14-107">
+    - **Application**: Both L_Hip_Yaw and R_Hip_Yaw
+    - **Peak Torque**: 60 Nm
+    - **Usage**: Rotational movements and turning
+    - **Quantity**: 2 (one per leg)
+  </Accordion>
+
+  <Accordion title="Knee Pitch Motor - EC-A4315-P2-36">
+    - **Application**: Both L_Knee_Pitch and R_Knee_Pitch
+    - **Peak Torque**: 75 Nm
+    - **Usage**: Leg bending for walking and stance control
+    - **Quantity**: 2 (one per leg)
+  </Accordion>
+
+  <Accordion title="Ankle Motors - EC-A4310-P2-36">
+    - **Application**: All ankle joints (L_Ankle_A, L_Ankle_B, R_Ankle_A, R_Ankle_B)
+    - **Peak Torque**: 36 Nm each
+    - **Usage**: Combined to provide ankle pitch and roll through RSU mechanism
+    - **Quantity**: 4 (two per leg)
+    - **Note**: Same motor model used for both A and B positions
+  </Accordion>
+</AccordionGroup>
+
+### Total Motor Count
+
+| Motor Model | Quantity | Application |
+|-------------|----------|-------------|
+| EC-A6416-P2-25 | 2 | Hip Pitch (left + right) |
+| EC-A5013-H17-100 | 2 | Hip Roll (left + right) |
+| EC-A3814-H14-107 | 2 | Hip Yaw (left + right) |
+| EC-A4315-P2-36 | 2 | Knee Pitch (left + right) |
+| EC-A4310-P2-36 | 4 | Ankle A & B (2 per leg) |
+| **Total** | **12** | **6 DOF per leg** |
+
+## Ankle Mechanism
+
+The Revolute Spherical Universal (RSU) ankle is a key innovation in Asimov v0, using a coupled linkage mechanism instead of direct drive.
+
+### Mechanism Overview
+
+<Note>
+  The ankle uses two motors (A and B) connected via parallel linkages to a bar. By controlling motors A and B, the system achieves both pitch (dorsi/plantarflexion) and roll (inversion/eversion) movements.
+</Note>
+
+### Forward Kinematics: Pitch/Roll → Motor A/B
+
+To convert desired ankle pitch (θ_p) and roll (θ_r) to motor positions:
+
+```cpp
+// Using small angle approximation
+theta_A =  K_P * theta_p - K_R * theta_r
+theta_B = -K_P * theta_p - K_R * theta_r
+
+// Where:
+// K_P = d / r  (pitch coupling constant)
+// K_R = c / (2 * r)  (roll coupling constant)
+// d = distance from pivot point to bar
+// c = length of the coupling bar
+// r = radius of motor mount (r_A = r_B)
+```
+
+**Example Code:**
+```cpp
+float right_A = ANKLE_COUPLING_K_PITCH * right_pitch - ANKLE_COUPLING_K_ROLL * right_roll;
+float right_B = -ANKLE_COUPLING_K_PITCH * right_pitch - ANKLE_COUPLING_K_ROLL * right_roll;
+
+float left_A = ANKLE_COUPLING_K_PITCH * left_pitch - ANKLE_COUPLING_K_ROLL * left_roll;
+float left_B = -ANKLE_COUPLING_K_PITCH * left_pitch - ANKLE_COUPLING_K_ROLL * left_roll;
+```
+
+<Warning>
+  Due to the mirrored rotation axis on the pitch ankle and asymmetrical linkages, the PR → AB equations are the same for both legs.
+</Warning>
+
+### Inverse Kinematics: Motor A/B → Pitch/Roll
+
+To read actual ankle pitch and roll from motor positions:
+
+```cpp
+// Direct calculation (not an inverse of forward kinematics)
+theta_p = (theta_A - theta_B) * (r / (2 * d))
+theta_r = -(theta_A + theta_B) * (r / c)
+
+// Alternatively:
+theta_p = (theta_A - theta_B) / (2.0 * K_PITCH)
+theta_r = -(theta_A + theta_B) / (2.0 * K_ROLL)
+```
+
+**Example Code:**
+```cpp
+float right_pitch = (right_A - right_B) / (2.0f * K_PITCH);
+float right_roll  = -(right_A + right_B) / (2.0f * K_ROLL);
+
+float left_pitch = (left_A - left_B) / (2.0f * K_PITCH);
+float left_roll  = -(left_A + left_B) / (2.0f * K_ROLL);
+```
+
+### Mechanism Advantages
+
+<CardGroup cols={2}>
+  <Card title="Reduced Distal Weight" icon="weight-hanging">
+    Motors are positioned higher on the leg, reducing rotational inertia at the ankle.
+  </Card>
+  <Card title="High Torque Capacity" icon="bolt">
+    Mechanical advantage provides strong torque output for both pitch and roll.
+  </Card>
+  <Card title="Compact Design" icon="compress">
+    Achieves 2-DOF ankle control in a smaller package than dual direct-drive design.
+  </Card>
+  <Card title="Force Distribution" icon="arrows-split-up-and-left">
+    Load is shared across parallel linkages, improving durability.
+  </Card>
+</CardGroup>
+
+## Articulated Toe
+
+Each foot includes a passive articulated toe joint with the following specifications:
+
+### Toe Joint Parameters
+
+| Parameter | Left Toe | Right Toe |
+|-----------|----------|------------|
+| **Joint Type** | Passive revolute hinge | Passive revolute hinge |
+| **Range** | -60° to 0° (-1.047 to 0 rad) | 0° to +60° (0 to 1.047 rad) |
+| **Stiffness** | 4.5 Nm/rad | 4.5 Nm/rad |
+| **Damping** | 0.5 Nm⋅s/rad | 0.5 Nm⋅s/rad |
+| **Spring Reference** | 0° (neutral) | 0° (neutral) |
+| **Friction Loss** | 0.02 Nm | 0.02 Nm |
+| **Mass** | 0.112 kg | 0.112 kg |
+
+### Toe Benefits
+
+<Note>
+  The articulated toe acts as passive compliance during the toe-off phase of walking, improving energy efficiency and enabling more natural gait patterns similar to human walking.
+</Note>
+
+- **Energy Return**: Spring stores and releases energy during push-off
+- **Natural Gait**: Allows heel-strike to toe-off transition
+- **Improved Stability**: Additional ground contact point during stance phase
+- **Passive Compliance**: No actuation required, reducing system complexity
+
+## Physical Dimensions
+
+Key dimensional parameters extracted from the MuJoCo model:
+
+### Leg Segment Lengths
+
+| Segment | Length (mm) | Description |
+|---------|-------------|-------------|
+| Hip to Knee | 247.7 | Combined hip linkage (hip offset + upper leg) |
+| Knee to Ankle | 294.7 | Lower leg length |
+| Ankle to Ground | ~50 | Foot height including toe |
+| Toe Length | ~65 | From toe joint to tip |
+| **Total Leg Length** | ~592 | Hip joint to ground (approx.) |
+
+### Hip Configuration
+
+- **Hip Width**: 113.1 mm (center-to-center between left and right hip pitch joints)
+- **Hip Offset**: 56.6 mm (lateral offset from pelvis centerline)
+- **Hip Vertical Offset**: 105.4 mm (pelvis to hip pitch joint)
+
+### Foot Dimensions
+
+- **Foot Length**: ~145 mm (heel to toe tip)
+- **Foot Width**: ~70 mm (at widest point)
+- **Ground Clearance**: 22 mm (sole thickness)
+
+## Mass Distribution
+
+Approximate mass breakdown per leg:
+
+| Component | Mass (kg) | Percentage |
+|-----------|-----------|------------|
+| Hip Assembly | 2.59 | 45% |
+| Upper Leg (Thigh) | 1.28 | 22% |
+| Lower Leg (Shin) | 2.25 | 39% |
+| Ankle & Foot | 1.16 | 20% |
+| **Total per Leg** | **~5.75** | **100%** |
+| **Both Legs** | **~11.5** | - |
+
+<Note>
+  Mass values are approximate and based on the MuJoCo simulation model. Actual hardware masses may vary slightly depending on manufacturing tolerances and assembly.
+</Note>
+
+## Inertial Properties
+
+Key inertial properties from the simulation model are available in the MuJoCo XML file. These include:
+
+- Center of mass positions for each link
+- Diagonal inertia tensors for all bodies
+- Armature values for joint dynamics (0.01 kg⋅m² for all actuated joints)
+
+<Accordion title="Accessing Full Inertial Data">
+  The complete inertial properties are defined in the MuJoCo simulation model at:
+  
+  `/sim-model/xmls/asimov.xml`
+  
+  Each body includes:
+  - `<inertial>` tags with position, quaternion, mass, and diagonal inertia
+  - Precise COM locations relative to parent frames
+  - Full mass and inertia values for accurate dynamics simulation
+</Accordion>
+
+## Control Interface
+
+### Joint Naming Convention
+
+All joints follow a consistent naming pattern:
+
+```
+[Side]_[Location]_[Type]_joint
+```
+
+Examples:
+- `left_hip_pitch_joint`
+- `right_knee_joint`
+- `left_ankle_pitch_joint`
+
+### Actuator Configuration
+
+<Note>
+  Actuators are configured programmatically using position control with PD gains. All damping comes from the actuator configuration (KD term), not from joint damping parameters.
+</Note>
+
+Key points:
+- **Control Type**: Position control (built-in position actuators)
+- **Joint Friction**: 0 (removed to prevent double-damping)
+- **Joint Damping**: 0 for motors (all damping via actuator KD)
+- **Armature**: 0.01 kg⋅m² for all actuated joints
+
+## Manufacturing Notes
+
+### 3D Printing Specifications
+
+<CardGroup cols={2}>
+  <Card title="Technology" icon="print">
+    **Multi Jet Fusion (MJF)**
+    
+    Nylon PA12 material optimized for strength and durability
+  </Card>
+  <Card title="Post-Processing" icon="gears">
+    Standard MJF finishing:
+    - Bead blasting
+    - Optional dyeing
+    - No support removal needed
+  </Card>
+</CardGroup>
+
+### Assembly Considerations
+
+- Standard metric fasteners throughout
+- Press-fit bearings in several locations
+- Motor mounting uses standard bolt patterns
+- Cable routing channels integrated into printed parts
+
+## Simulation Model
+
+The MuJoCo simulation model provides:
+
+- **Full kinematic chain** with accurate joint placement
+- **Collision geometries** using capsules for efficiency
+- **Visual meshes** (STL files) for realistic rendering
+- **Contact exclusions** between adjacent links
+- **Sensor suite**: IMU (gyro, accelerometer, orientation), contact sensors
+
+<Card title="View 3D Model" icon="cube" href="https://static.asimov.inc/ASV0_LowerBody.HTML">
+  Interactive 3D visualization of the complete assembly
+</Card>
+
+## Reference Resources
+
+<CardGroup cols={2}>
+  <Card title="GitHub Repository" icon="github" href="https://github.com/asimovinc/asimov-v0">
+    Complete source files, CAD models, and simulation code
+  </Card>
+  <Card title="Mechanical Design" icon="drafting-compass" href="https://github.com/asimovinc/asimov-v0/tree/main/mechanical">
+    CAD files, assembly instructions, and manufacturing details
+  </Card>
+  <Card title="Ankle Mechanism Details" icon="book-open" href="https://github.com/asimovinc/asimov-v0/blob/main/mechanical/ankle_mechanism.md">
+    Complete mathematical derivation of RSU ankle kinematics
+  </Card>
+  <Card title="Simulation Model" icon="robot" href="https://github.com/asimovinc/asimov-v0/tree/main/sim-model">
+    MuJoCo XML files and assets for physics simulation
+  </Card>
+</CardGroup>

@@ -1,0 +1,178 @@
+---
+title: 'Simulation Overview'
+description: 'Introduction to Asimov simulation capabilities and MuJoCo integration'
+---
+
+## Introduction
+
+Asimov v0 includes a comprehensive physics simulation model built for [MuJoCo](https://mujoco.org/), a high-performance physics engine widely used in robotics research and reinforcement learning. The simulation provides a digital twin of the physical robot, enabling algorithm development, controller testing, and gait optimization before deployment to hardware.
+
+<Note>
+  The simulation model is designed to closely match the physical robot's dynamics, including accurate inertial properties, joint limits, and collision geometry.
+</Note>
+
+## What's Included
+
+The Asimov simulation model provides:
+
+<CardGroup cols={2}>
+  <Card title="Complete Kinematic Chain" icon="sitemap">
+    12 DOF bipedal leg system with pelvis, hips, knees, ankles, and articulated toes
+  </Card>
+  <Card title="Accurate Physics" icon="atom">
+    Realistic inertial properties, joint damping, and friction parameters from CAD models
+  </Card>
+  <Card title="Collision Detection" icon="shield-halved">
+    Optimized capsule-based collision geometry for efficient contact simulation
+  </Card>
+  <Card title="Sensor Suite" icon="radar">
+    IMU (gyroscope, accelerometer, orientation) and contact sensors
+  </Card>
+</CardGroup>
+
+### Key Features
+
+- **Dual Mesh System**: Separate visual and collision meshes for rendering performance
+- **Articulated Toe Joints**: Spring-loaded toe mechanisms with 4.5 Nm/rad stiffness
+- **Contact Exclusions**: Self-collision prevention between adjacent body segments
+- **Free-Floating Base**: 6-DOF floating base joint for realistic dynamics
+- **IMU Simulation**: Pelvis-mounted IMU providing angular velocity, linear velocity, and orientation
+
+## Use Cases
+
+### 1. Reinforcement Learning
+
+Train locomotion policies using GPU-accelerated parallel simulation environments. The MuJoCo model integrates seamlessly with popular RL frameworks:
+
+- Isaac Lab / Isaac Gym
+- MuJoCo MJX (JAX-based)
+- Brax
+- dm_control
+
+### 2. Controller Development
+
+Test and tune control algorithms in simulation before hardware deployment:
+
+- PD controller gains
+- Model Predictive Control (MPC)
+- Whole-body control
+- Trajectory optimization
+
+### 3. Gait Analysis
+
+Analyze walking gaits, stability margins, and ground reaction forces:
+
+- Zero Moment Point (ZMP) analysis
+- Center of Mass (CoM) trajectory planning
+- Phase portrait analysis
+- Energy efficiency optimization
+
+### 4. Sim-to-Real Transfer
+
+Develop policies that transfer from simulation to the physical robot:
+
+- Domain randomization
+- System identification
+- Dynamics parameter tuning
+
+## Getting Started with MuJoCo
+
+<Steps>
+  <Step title="Install MuJoCo">
+    Install MuJoCo 3.0+ and Python bindings:
+    
+    ```bash
+    pip install mujoco
+    ```
+  </Step>
+  
+  <Step title="Load the Model">
+    Load the Asimov model from XML:
+    
+    ```python
+    import mujoco
+    
+    # Load the model
+    model = mujoco.MjModel.from_xml_path('sim-model/xmls/asimov.xml')
+    data = mujoco.MjData(model)
+    
+    # Step the simulation
+    mujoco.mj_step(model, data)
+    ```
+  </Step>
+  
+  <Step title="Visualize">
+    Launch the interactive viewer:
+    
+    ```python
+    import mujoco.viewer
+    
+    viewer = mujoco.viewer.launch(model)
+    ```
+  </Step>
+  
+  <Step title="Read Sensor Data">
+    Access IMU and joint state data:
+    
+    ```python
+    # Joint positions and velocities
+    qpos = data.qpos  # Joint positions
+    qvel = data.qvel  # Joint velocities
+    
+    # IMU data
+    gyro = data.sensordata[0:3]      # Angular velocity
+    accel = data.sensordata[3:6]     # Linear acceleration
+    quat = data.sensordata[6:10]     # Orientation quaternion
+    ```
+  </Step>
+</Steps>
+
+## Model Structure
+
+The simulation model is organized into several key components:
+
+```
+sim-model/
+├── xmls/
+│   └── asimov.xml          # Main MuJoCo model definition
+└── assets/
+    └── meshes/             # STL mesh files for visualization
+```
+
+### Model Hierarchy
+
+```
+pelvis_link (floating base)
+├── left_hip_pitch_link
+│   └── left_hip_roll_link
+│       └── left_hip_yaw_link
+│           └── left_knee_link
+│               └── left_ankle_pitch_link
+│                   └── left_ankle_roll_link
+│                       └── left_toe_link
+└── right_hip_pitch_link
+    └── right_hip_roll_link
+        └── right_hip_yaw_link
+            └── right_knee_link
+                └── right_ankle_pitch_link
+                    └── right_ankle_roll_link
+                        └── right_toe_link
+```
+
+## Next Steps
+
+For detailed information about the MuJoCo model structure, joint configurations, and XML specifications, see:
+
+<Card
+  title="MuJoCo Model Reference"
+  icon="file-code"
+  href="/simulation/mujoco-model"
+>
+  Detailed breakdown of the asimov.xml model file, including joints, actuators, sensors, and collision geometry
+</Card>
+
+## Resources
+
+- [MuJoCo Documentation](https://mujoco.readthedocs.io/)
+- [MuJoCo Python Bindings](https://mujoco.readthedocs.io/en/stable/python.html)
+- [MuJoCo Forum](https://github.com/google-deepmind/mujoco/discussions)

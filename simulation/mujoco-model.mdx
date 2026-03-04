@@ -1,0 +1,705 @@
+---
+title: 'MuJoCo Model Reference'
+description: 'Detailed specification of the Asimov MuJoCo model (asimov.xml)'
+---
+
+## Overview
+
+The Asimov MuJoCo model (`asimov.xml`) defines the complete robot kinematics, dynamics, collision geometry, sensors, and visual appearance. This reference documents the key elements and their configuration.
+
+<Note>
+  The model uses MuJoCo's XML format. All angles are specified in radians, and the mesh directory is set relative to the XML file location.
+</Note>
+
+## Model Configuration
+
+### Compiler Settings
+
+The model compiler is configured with:
+
+```xml
+<compiler angle="radian" meshdir="../assets/meshes"/>
+```
+
+- **Angle convention**: Radians (MuJoCo default)
+- **Mesh directory**: `../assets/meshes/` containing all STL files
+
+### Visual Settings
+
+```xml
+<visual>
+    <global offwidth="1920" offheight="1080"/>
+    <headlight diffuse="0.6 0.6 0.6" ambient="0.1 0.1 0.1" specular="0.9 0.9 0.9"/>
+    <rgba haze="0.15 0.25 0.35 1"/>
+    <global azimuth="-140" elevation="-20"/>
+</visual>
+```
+
+Configures rendering resolution (1920×1080) and lighting for realistic visualization.
+
+## Default Classes
+
+### Joint Defaults
+
+The model defines custom default classes for different joint types:
+
+<CodeGroup>
+```xml Motor Joints
+<default class="motor">
+    <joint damping="0"/>  <!-- PD controller provides all damping via KD -->
+</default>
+```
+
+```xml Base Joints
+<joint frictionloss="0"/>
+```
+</CodeGroup>
+
+<Note>
+  **Design Decision**: Joint frictionloss and damping are set to 0 at the joint level. All damping is provided by the actuator configuration to prevent double-counting dissipation effects.
+</Note>
+
+### Geometry Classes
+
+Two geometry classes separate visual and collision meshes:
+
+<CodeGroup>
+```xml Visual Meshes
+<default class="visual">
+    <geom material="visual_grey" 
+          contype="0" 
+          conaffinity="0" 
+          group="2"/>
+</default>
+```
+
+```xml Collision Geometry
+<default class="collision">
+    <geom group="3" 
+          rgba=".2 .6 .2 .3" 
+          type="capsule" 
+          contype="1" 
+          conaffinity="1"/>
+</default>
+```
+</CodeGroup>
+
+- **Visual meshes** (group 2): High-fidelity STL meshes for rendering, no collision
+- **Collision geometry** (group 3): Simplified capsule primitives for efficient contact detection
+
+### Specialized Collision Classes
+
+```xml
+<default class="foot_capsule">
+    <geom type="capsule" size="0.01"/>
+</default>
+<default class="body_capsule">
+    <geom type="capsule" size="0.05"/>
+</default>
+```
+
+Optimized capsule sizes for different body parts.
+
+## Assets
+
+### Materials
+
+The model defines several materials for visual appearance:
+
+```xml
+<material name="visual_grey" rgba="0.7 0.7 0.7 1.0" />
+<material name="collision_grey" rgba="0.5 0.5 0.5 0.5" />
+<material name="material" rgba="0.75294 0.75294 0.75294 1" />
+<material name="collision_material" rgba="1.0 0.28 0.1 0.9" />
+```
+
+### Ground Plane
+
+A textured ground plane with checker pattern:
+
+```xml
+<texture type="2d" name="groundplane" 
+         builtin="checker" 
+         mark="edge" 
+         rgb1="0.2 0.3 0.4" 
+         rgb2="0.1 0.2 0.3" 
+         markrgb="0.8 0.8 0.8" 
+         width="300" height="300"/>
+<material name="groundplane" 
+          texture="groundplane" 
+          texuniform="true" 
+          texrepeat="5 5" 
+          reflectance="0.2"/>
+```
+
+### Mesh Assets
+
+The model references 15 STL mesh files:
+
+<Accordion title="Complete Mesh List">
+  - `pelvis_link.STL`
+  - `left_hip_pitch_link.STL`
+  - `left_hip_roll_link.STL`
+  - `left_hip_yaw_link.STL`
+  - `left_knee_link.STL`
+  - `left_ankle_pitch_link.STL`
+  - `left_ankle_roll_link.STL`
+  - `left_toe_link.STL`
+  - `right_hip_pitch_link.STL`
+  - `right_hip_roll_link.STL`
+  - `right_hip_yaw_link.STL`
+  - `right_knee_link.STL`
+  - `right_ankle_pitch_link.STL`
+  - `right_ankle_roll_link.STL`
+  - `right_toe_link.STL`
+</Accordion>
+
+All meshes are loaded from the `assets/meshes/` directory.
+
+## World Body
+
+### Lighting
+
+The environment includes two directional lights for realistic shading:
+
+```xml
+<light pos="1 0 3.5" dir="0 0 -1" directional="true"/>
+<light directional="true" 
+       diffuse=".6 .6 .6" 
+       specular="0.2 0.2 0.2" 
+       pos="0 0 4" 
+       dir="0 0 -1" />
+```
+
+### Ground Plane
+
+```xml
+<geom name="floor" 
+      size="0 0 0.05" 
+      type="plane" 
+      material="groundplane" 
+      contype="1" 
+      conaffinity="1"/>
+```
+
+## Robot Body Structure
+
+### Floating Base
+
+The pelvis is the root body with a free-floating base joint:
+
+```xml
+<body name="pelvis_link" pos="0.0 0.0 0.739" quat="1 0 0 0">
+    <inertial pos="-0.00071228 -3.4719E-07 -0.073826" 
+              quat="1.0 0.0 0.0 0.0" 
+              mass="3.3125" 
+              diaginertia="0.0033117 0.0028238 0.003564" />
+    <joint name="floating_base_joint" 
+           type="free" 
+           limited="false" 
+           actuatorfrclimited="false"/>
+    ...
+</body>
+```
+
+**Key parameters:**
+- Initial height: 0.739 m (standing configuration)
+- Mass: 3.3125 kg
+- 6-DOF free joint for translation and rotation
+
+### Inertial Properties
+
+All body segments include accurate inertial properties derived from CAD:
+
+<CardGroup cols={2}>
+  <Card title="Hip Pitch Link">
+    - Mass: 0.926 kg
+    - CoM offset from joint
+    - 3×3 diagonal inertia tensor
+  </Card>
+  <Card title="Knee Link">
+    - Mass: 2.248 kg (heaviest segment)
+    - Includes motor and gearbox mass
+    - Inertia: 0.0094 kg⋅m² (Ixx)
+  </Card>
+  <Card title="Ankle Roll Link">
+    - Mass: 0.613 kg
+    - Includes foot structure
+    - Inertia: 0.00070 kg⋅m² (Izz)
+  </Card>
+  <Card title="Toe Link">
+    - Mass: 0.112 kg (lightest segment)
+    - Spring-loaded joint
+    - Inertia: 5.54×10⁻⁵ kg⋅m² (Ixx)
+  </Card>
+</CardGroup>
+
+## Joint Configuration
+
+### Left Leg Joints
+
+<CodeGroup>
+```xml Hip Pitch
+<joint name="left_hip_pitch_joint" 
+       type="hinge" 
+       ref="0.0" 
+       class="motor" 
+       range="-2.094395 1" 
+       axis="0 0.70711 -0.70711" 
+       armature="0.01"/>
+```
+
+```xml Hip Roll
+<joint name="left_hip_roll_joint" 
+       type="hinge" 
+       ref="0.0" 
+       class="motor" 
+       range="-0.785398 0.785398" 
+       axis="1 0 0" 
+       armature="0.01"/>
+```
+
+```xml Hip Yaw
+<joint name="left_hip_yaw_joint" 
+       type="hinge" 
+       ref="0.0" 
+       class="motor" 
+       range="-0.785398 0.785398" 
+       axis="0 0 -1" 
+       armature="0.01"/>
+```
+
+```xml Knee
+<joint name="left_knee_joint" 
+       type="hinge" 
+       ref="0.0" 
+       class="motor" 
+       range="0 1.5" 
+       axis="0 1 0" 
+       armature="0.01"/>
+```
+
+```xml Ankle Pitch
+<joint name="left_ankle_pitch_joint" 
+       type="hinge" 
+       ref="0.0" 
+       class="motor" 
+       range="-0.349066 0.5" 
+       axis="0 1 0" 
+       armature="0.01"/>
+```
+
+```xml Ankle Roll
+<joint name="left_ankle_roll_joint" 
+       type="hinge" 
+       ref="0.0" 
+       class="motor" 
+       range="-0.1 0.1" 
+       axis="-1 0 0" 
+       armature="0.01"/>
+```
+</CodeGroup>
+
+### Joint Ranges Summary
+
+| Joint | Range (rad) | Range (deg) | Note |
+|-------|-------------|-------------|------|
+| Left Hip Pitch | -2.094 to 1.0 | -120° to 57° | Asymmetric |
+| Left Hip Roll | -0.785 to 0.785 | -45° to 45° | Symmetric |
+| Left Hip Yaw | -0.785 to 0.785 | -45° to 45° | Symmetric |
+| Left Knee | 0 to 1.5 | 0° to 86° | Extension only |
+| Left Ankle Pitch | -0.349 to 0.5 | -20° to 29° | Limited range |
+| Left Ankle Roll | -0.1 to 0.1 | -5.7° to 5.7° | Very limited |
+
+<Note>
+  Right leg joints have mirrored ranges. For example, right hip pitch ranges from -1.0 to 2.094 rad (-57° to 120°).
+</Note>
+
+### Toe Joints (Passive Spring)
+
+The articulated toe joints include spring-damper mechanics:
+
+```xml
+<joint name="left_toe_joint" 
+       type="hinge" 
+       range="-1.047 0" 
+       axis="0.010532 0.99994 0" 
+       limited="true" 
+       stiffness="4.5" 
+       springref="0" 
+       damping="0.5" 
+       armature="0.01" 
+       frictionloss="0.02" 
+       solreflimit="0.005 1" 
+       solimplimit="0.99 0.999 0.001" 
+       margin="0.01"/>
+```
+
+**Toe spring parameters:**
+- **Stiffness**: 4.5 Nm/rad (rigid training wheels)
+- **Damping**: 0.5 Nm⋅s/rad
+- **Range**: -60° to 0° (left), 0° to 60° (right)
+- **Friction loss**: 0.02 Nm
+- Hard mechanical stop via `solimplimit`
+
+<Note>
+  The toe joints are **passive** (not actuated). The spring stiffness provides ground compliance during stance phase.
+</Note>
+
+## Collision Geometry
+
+### Capsule-Based Collision
+
+Instead of using complex meshes for collision detection, the model uses efficient capsule primitives:
+
+<CodeGroup>
+```xml Body Segment
+<geom name="left_knee_link_collision" 
+      class="body_capsule" 
+      fromto="0 0 0 0 0 -0.25"/>
+```
+
+```xml Foot Capsules
+<geom name="left_foot1_collision" 
+      class="foot_capsule" 
+      fromto="0.06 -0.03 -0.022 0.09 -0.035 -0.022"/>
+<geom name="left_foot2_collision" 
+      class="foot_capsule" 
+      fromto="-0.035 -0.015 -0.022 0.09 -0.015 -0.022"/>
+```
+</CodeGroup>
+
+**Capsule sizes:**
+- Body capsules: 0.05 m radius
+- Foot capsules: 0.01 m radius
+
+### Foot Contact Geometry
+
+Each foot has 5-6 parallel capsules forming a contact surface:
+
+```
+     [Toe capsules (5)]
+          |
+          | (toe joint)
+          |
+     [Foot capsules (5-6)]
+          |
+      ankle joint
+```
+
+This multi-capsule design provides:
+- Stable ground contact
+- Realistic friction behavior
+- Efficient collision detection
+- Smooth rolling motion during walking
+
+### Contact Exclusions
+
+Adjacent body segments have collision exclusions to prevent self-collision:
+
+```xml
+<contact>
+    <exclude body1="pelvis_link" body2="left_hip_pitch_link" />
+    <exclude body1="left_hip_pitch_link" body2="left_hip_roll_link" />
+    <exclude body1="left_hip_roll_link" body2="left_hip_yaw_link" />
+    <exclude body1="left_hip_yaw_link" body2="left_knee_link" />
+    <exclude body1="left_knee_link" body2="left_ankle_pitch_link" />
+    <exclude body1="left_ankle_pitch_link" body2="left_ankle_roll_link" />
+    <exclude body1="left_ankle_roll_link" body2="left_toe_link" />
+    <!-- Right leg exclusions omitted for brevity -->
+</contact>
+```
+
+## Sensors
+
+### IMU Sensor Suite
+
+A complete IMU is simulated at the pelvis link:
+
+```xml
+<site name="imu_in_pelvis" size="0.01" pos="0.04525 0 -0.08339"/>
+
+<sensor>
+    <gyro name="imu_ang_vel" site="imu_in_pelvis"/>
+    <velocimeter name="imu_lin_vel" site="imu_in_pelvis"/>
+    <framequat name="imu_quat" objtype="site" objname="imu_in_pelvis"/>
+    <subtreeangmom name="root_angmom" body="pelvis_link"/>
+</sensor>
+```
+
+**Sensor outputs:**
+1. **Gyroscope** (`imu_ang_vel`): 3D angular velocity in body frame
+2. **Accelerometer** (`imu_lin_vel`): 3D linear acceleration
+3. **Orientation** (`imu_quat`): Orientation quaternion (w, x, y, z)
+4. **Angular Momentum** (`root_angmom`): Subtree angular momentum
+
+### IMU Placement
+
+The IMU site is positioned at `[0.04525, 0, -0.08339]` m relative to the pelvis link origin, matching the physical hardware mounting location.
+
+### Additional Sensor Sites
+
+```xml
+<site name="left_foot" pos="0.04 0 -0.025"/>
+<site name="right_foot" pos="0.04 0 -0.025"/>
+<site name="pelvis_link_site" pos="0 0 0" quat="1 0 0 0" />
+```
+
+These sites can be used for custom sensor placement or trajectory tracking.
+
+## Actuators
+
+Actuators are added programmatically via the simulation framework:
+
+```xml
+<!-- Actuators are added programmatically by BuiltinPositionActuatorCfg -->
+```
+
+<Note>
+  The XML file does not include `<actuator>` tags. Actuators (position, velocity, or torque) are typically configured in the simulation environment code (e.g., Isaac Lab, dm_control) to allow flexible control schemes.
+</Note>
+
+## Cameras
+
+Two tracking cameras are pre-configured for visualization:
+
+<CodeGroup>
+```xml Front Camera
+<camera name="front_camera" 
+        mode="track" 
+        fovy="90.0" 
+        pos="0.0 2.0 0.5" 
+        quat="4.33e-17 4.33e-17 0.7071 0.7071" />
+```
+
+```xml Side Camera
+<camera name="side_camera" 
+        mode="track" 
+        fovy="90.0" 
+        pos="-2.0 0.0 0.5" 
+        quat="-0.5 -0.5 0.5 0.5" />
+```
+</CodeGroup>
+
+Both cameras track the pelvis link with 90° field of view.
+
+## Loading and Using the Model
+
+### Basic Loading
+
+```python
+import mujoco
+import numpy as np
+
+# Load model
+model = mujoco.MjModel.from_xml_path('sim-model/xmls/asimov.xml')
+data = mujoco.MjData(model)
+
+# Print model info
+print(f"Number of bodies: {model.nbody}")
+print(f"Number of joints: {model.njnt}")
+print(f"Number of DOFs: {model.nv}")
+print(f"Number of actuators: {model.nu}")
+print(f"Number of sensors: {model.nsensor}")
+```
+
+### Setting Initial Configuration
+
+```python
+# Set initial joint positions
+# qpos[0:3] = pelvis position (x, y, z)
+# qpos[3:7] = pelvis orientation (qw, qx, qy, qz)
+# qpos[7:] = joint positions
+
+data.qpos[0:3] = [0, 0, 0.739]  # Pelvis at 0.739m height
+data.qpos[3:7] = [1, 0, 0, 0]   # Upright orientation
+
+# Reset velocities
+data.qvel[:] = 0
+
+# Forward kinematics
+mujoco.mj_forward(model, data)
+```
+
+### Reading Joint States
+
+```python
+# Get joint names
+joint_names = [model.joint(i).name for i in range(model.njnt)]
+
+# Find joint index
+left_knee_id = mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_JOINT, 'left_knee_joint')
+
+# Read joint position and velocity
+qpos_addr = model.jnt_qposadr[left_knee_id]
+qvel_addr = model.jnt_dofadr[left_knee_id]
+
+knee_pos = data.qpos[qpos_addr]
+knee_vel = data.qvel[qvel_addr]
+```
+
+### Reading Sensor Data
+
+```python
+# IMU data is in data.sensordata
+gyro_id = mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_SENSOR, 'imu_ang_vel')
+accel_id = mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_SENSOR, 'imu_lin_vel')
+quat_id = mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_SENSOR, 'imu_quat')
+
+gyro_addr = model.sensor_adr[gyro_id]
+accel_addr = model.sensor_adr[accel_id]
+quat_addr = model.sensor_adr[quat_id]
+
+angular_velocity = data.sensordata[gyro_addr:gyro_addr+3]
+linear_acceleration = data.sensordata[accel_addr:accel_addr+3]
+orientation = data.sensordata[quat_addr:quat_addr+4]
+```
+
+### Stepping the Simulation
+
+```python
+# Single step
+mujoco.mj_step(model, data)
+
+# Simulation loop
+dt = model.opt.timestep  # Default: 0.002s (500 Hz)
+for i in range(1000):
+    # Apply control
+    data.ctrl[:] = target_positions  # If using position actuators
+    
+    # Step physics
+    mujoco.mj_step(model, data)
+    
+    # Read sensor feedback
+    sensor_data = data.sensordata.copy()
+```
+
+## Model Customization
+
+### Modifying Joint Ranges
+
+To change joint limits, edit the `range` attribute:
+
+```xml
+<!-- Original -->
+<joint name="left_knee_joint" range="0 1.5" .../>
+
+<!-- Modified for extended range -->
+<joint name="left_knee_joint" range="0 2.0" .../>
+```
+
+### Adding Actuators
+
+Add actuator definitions before the `</mujoco>` closing tag:
+
+```xml
+<actuator>
+    <!-- Position actuators with PD control -->
+    <position name="left_hip_pitch" 
+              joint="left_hip_pitch_joint" 
+              kp="100" 
+              kv="10" 
+              forcerange="-120 120"/>
+    
+    <!-- Repeat for all 12 joints... -->
+</actuator>
+```
+
+### Adjusting Contact Parameters
+
+Modify ground friction and contact parameters:
+
+```xml
+<default>
+    <geom friction="1.0 0.005 0.0001"/>  <!-- [sliding, torsional, rolling] -->
+</default>
+```
+
+## Troubleshooting
+
+### Model Won't Load
+
+<AccordionGroup>
+  <Accordion title="Error: Cannot find mesh files">
+    Ensure the `meshdir` in the `<compiler>` tag points to the correct relative path:
+    
+    ```xml
+    <compiler angle="radian" meshdir="../assets/meshes"/>
+    ```
+    
+    The path should be relative to the XML file location.
+  </Accordion>
+  
+  <Accordion title="Error: Joint limit violation">
+    Initial configuration may violate joint limits. Check that `qpos` values are within joint ranges.
+  </Accordion>
+  
+  <Accordion title="Warning: Contact solver divergence">
+    Try adjusting solver parameters:
+    
+    ```xml
+    <option timestep="0.002" iterations="50" tolerance="1e-10"/>
+    ```
+  </Accordion>
+</AccordionGroup>
+
+### Simulation Instability
+
+1. **Reduce timestep**: Try `model.opt.timestep = 0.001` (1 kHz)
+2. **Increase solver iterations**: `model.opt.iterations = 100`
+3. **Check actuator limits**: Ensure force limits match hardware specs
+4. **Verify inertial properties**: Ensure no near-zero masses or inertias
+
+## Performance Optimization
+
+### GPU Acceleration
+
+For parallel simulation (RL training), use MuJoCo MJX:
+
+```python
+import jax
+from mujoco import mjx
+
+# Load model
+model = mujoco.MjModel.from_xml_path('asimov.xml')
+mjx_model = mjx.put_model(model)
+
+# Create vectorized data
+batch_size = 4096
+mjx_data = mjx.make_data(mjx_model)
+
+# Parallel step on GPU
+@jax.jit
+def step_batch(data):
+    return mjx.step(mjx_model, data)
+
+data = jax.vmap(step_batch)(mjx_data)
+```
+
+### Reducing Rendering Overhead
+
+```python
+# Disable visual geoms during training
+model.vis.global_.offwidth = 0  # Disable offscreen rendering
+
+# Render only every N steps
+if step % render_every == 0:
+    renderer.update_scene(data)
+```
+
+## Related Resources
+
+<CardGroup cols={2}>
+  <Card title="Simulation Overview" icon="book" href="/simulation/overview">
+    Introduction to simulation capabilities and use cases
+  </Card>
+  <Card title="Hardware Specs" icon="robot" href="/specifications">
+    Physical robot specifications and motor details
+  </Card>
+  <Card title="Motor Details" icon="gear" href="/hardware/motors">
+    Motor specifications and actuator information
+  </Card>
+  <Card title="MuJoCo Docs" icon="external-link" href="https://mujoco.readthedocs.io/">
+    Official MuJoCo documentation
+  </Card>
+</CardGroup>

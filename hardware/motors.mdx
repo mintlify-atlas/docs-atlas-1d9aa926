@@ -1,0 +1,168 @@
+---
+title: 'Motor Specifications'
+description: 'Detailed specifications for Encos motors used in Asimov bipedal legs'
+---
+
+## Overview
+
+Asimov uses high-performance actuators from [Encos](http://encos.cn), a manufacturer specializing in compact, high-torque servo motors for robotics applications. Each joint type uses a specific motor model optimized for its torque and speed requirements.
+
+<Note>
+  All motors are off-the-shelf components, ensuring availability and reducing custom manufacturing requirements.
+</Note>
+
+## Motor Models by Joint Type
+
+Each joint in the Asimov leg uses a specific Encos motor model selected for optimal performance:
+
+| Joint Type     | Motor Model          | Peak Torque | Application                        |
+|----------------|----------------------|-------------|------------------------------------||
+| Hip Pitch      | EC-A6416-P2-25       | 120 Nm      | Hip flexion/extension              |
+| Hip Roll       | EC-A5013-H17-100     | 90 Nm       | Hip abduction/adduction            |
+| Hip Yaw        | EC-A3814-H14-107     | 60 Nm       | Hip internal/external rotation     |
+| Knee Pitch     | EC-A4315-P2-36       | 75 Nm       | Knee flexion/extension             |
+| Ankle A        | EC-A4310-P2-36       | 36 Nm       | Ankle dorsi/plantarflexion         |
+| Ankle B        | EC-A4310-P2-36       | 36 Nm       | Ankle inversion/eversion           |
+
+## Detailed Motor Specifications
+
+### Hip Pitch Motor: EC-A6416-P2-25
+
+The hip pitch joint requires the highest torque in the leg system to support the robot's weight and enable rapid leg swing during walking.
+
+<Accordion title="Key Specifications">
+  - **Peak Torque**: 120 Nm
+  - **Application**: Hip flexion/extension movements
+  - **Mounting**: Direct drive configuration
+  - **Range of Motion**: -120° to +57° (left), -57° to +120° (right)
+  - **Use Case**: Primary actuator for forward/backward leg swing during gait
+</Accordion>
+
+### Hip Roll Motor: EC-A5013-H17-100
+
+The hip roll motor enables lateral leg movements critical for balance and side-stepping maneuvers.
+
+<Accordion title="Key Specifications">
+  - **Peak Torque**: 90 Nm
+  - **Application**: Hip abduction/adduction movements
+  - **Range of Motion**: -45° to +45° (both legs)
+  - **Use Case**: Lateral stability and side-stepping during locomotion
+</Accordion>
+
+### Hip Yaw Motor: EC-A3814-H14-107
+
+The hip yaw motor provides rotational control around the vertical axis of the leg.
+
+<Accordion title="Key Specifications">
+  - **Peak Torque**: 60 Nm
+  - **Application**: Hip internal/external rotation
+  - **Range of Motion**: -45° to +45° (both legs)
+  - **Use Case**: Turning maneuvers and orientation adjustments
+</Accordion>
+
+### Knee Pitch Motor: EC-A4315-P2-36
+
+The knee actuator enables leg flexion and extension, crucial for shock absorption and push-off.
+
+<Accordion title="Key Specifications">
+  - **Peak Torque**: 75 Nm
+  - **Application**: Knee flexion/extension
+  - **Range of Motion**: 0° to +86° (left), -86° to 0° (right)
+  - **Use Case**: Stance phase support, swing phase clearance, and shock absorption
+</Accordion>
+
+### Ankle Motors: EC-A4310-P2-36
+
+Both ankle actuators use the same motor model, working together through the RSU mechanism to control ankle pitch and roll.
+
+<Accordion title="Key Specifications">
+  - **Peak Torque**: 36 Nm (each motor)
+  - **Application**: Ankle dorsi/plantarflexion and inversion/eversion (coupled)
+  - **Range of Motion**: -70° to +70° (both A and B motors)
+  - **Use Case**: Ground contact control, balance adjustments, and terrain adaptation
+</Accordion>
+
+<Warning>
+  The ankle motors work in a coupled configuration through the RSU mechanism. The actual ankle pitch and roll angles are derived from the combined positions of motors A and B. See the [Ankle Mechanism](/hardware/ankle-mechanism) page for details.
+</Warning>
+
+## Motor Selection Rationale
+
+<Steps>
+  <Step title="Torque Requirements">
+    Each motor was selected to meet or exceed the peak torque requirements calculated from dynamic walking simulations and worst-case loading scenarios.
+  </Step>
+  
+  <Step title="Size and Weight Constraints">
+    Encos motors provide excellent torque-to-weight ratios, minimizing the overall leg mass while maintaining required performance.
+  </Step>
+  
+  <Step title="Thermal Performance">
+    All motors include integrated thermal management, allowing for sustained operation during continuous walking cycles.
+  </Step>
+  
+  <Step title="Integration">
+    Standardized mounting interfaces simplify mechanical integration and enable field serviceability.
+  </Step>
+</Steps>
+
+## Sourcing Information
+
+### Primary Supplier
+
+<Card title="Encos Robotics" icon="building" href="http://encos.cn">
+  **Manufacturer**: Encos  
+  **Website**: http://encos.cn  
+  **Product Line**: High-performance servo actuators for humanoid robotics
+</Card>
+
+### Ordering Considerations
+
+<Note>
+  When ordering motors for Asimov:
+  - Verify the exact model numbers from the table above
+  - Order matched pairs for left/right symmetry when possible
+  - Consider ordering spare motors for critical joints (hip pitch, knee pitch)
+  - Lead times may vary; plan for 4-8 weeks for custom orders
+</Note>
+
+## Motor Control Requirements
+
+Each Encos motor requires:
+
+- **Position control interface**: CAN bus or RS-485 communication
+- **Power supply**: 48V DC nominal (range 42-54V)
+- **Current capacity**: Varies by motor, typically 10-30A peak per motor
+- **Encoder feedback**: Integrated absolute encoders for position sensing
+
+## Performance Characteristics
+
+<CardGroup cols={2}>
+  <Card title="High Torque Density" icon="weight-hanging">
+    Encos motors provide industry-leading torque-to-weight ratios, essential for humanoid locomotion.
+  </Card>
+  
+  <Card title="Fast Response" icon="gauge-high">
+    High-bandwidth servo control enables rapid adjustments during dynamic walking.
+  </Card>
+  
+  <Card title="Robust Design" icon="shield">
+    Sealed housings protect against dust and moisture in real-world operating environments.
+  </Card>
+  
+  <Card title="Integrated Drivers" icon="microchip">
+    Built-in motor drivers simplify electrical integration and reduce wiring complexity.
+  </Card>
+</CardGroup>
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Mechanical Design" icon="cube" href="/hardware/mechanical-design">
+    Learn about the overall mechanical structure and joint specifications
+  </Card>
+  
+  <Card title="Ankle Mechanism" icon="gears" href="/hardware/ankle-mechanism">
+    Understand how the ankle motors work together in the RSU mechanism
+  </Card>
+</CardGroup>

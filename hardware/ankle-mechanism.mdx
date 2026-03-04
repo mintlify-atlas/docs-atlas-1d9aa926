@@ -1,0 +1,291 @@
+---
+title: 'Ankle Mechanism'
+description: 'RSU ankle mechanism mathematics and implementation for coupled pitch-roll control'
+---
+
+## Overview
+
+The Asimov leg features an RSU (Revolute Spherical Universal) ankle mechanism that provides 2 degrees of freedom for ankle control. Unlike traditional direct-drive ankles, this mechanism uses two motors (A and B) that work together through a coupled linkage system to control ankle pitch and roll.
+
+<Note>
+  This coupled mechanism reduces mechanical complexity while providing robust ankle actuation. The tradeoff is that motor positions must be computed through mathematical transformations.
+</Note>
+
+## Mechanism Goals
+
+The ankle mechanism solves two primary control problems:
+
+1. **Forward Kinematics (AB → PR)**: Convert motor A and B positions to ankle pitch and roll angles
+2. **Inverse Kinematics (PR → AB)**: Convert desired ankle pitch and roll to required motor A and B positions
+
+## Mechanical Description
+
+The ankle mechanism consists of:
+
+- A straight bar with two connection points (left and right)
+- Motor A connected to the right connection point via parallel linkages
+- Motor B connected to the left connection point via parallel linkages
+- A pivot point at the ankle joint
+
+<Note>
+  Convention: The direction towards the ground is `-y` and away from the ground is `+y`.
+</Note>
+
+## Inverse Kinematics: Pitch/Roll → Motor Positions
+
+### Mathematical Derivation
+
+When viewing the right leg, the vertical displacement at points A and B can be treated as the sum of displacements caused by pitch and roll movements:
+
+<Steps>
+  <Step title="Define vertical displacements">
+    ```r
+    y_A = y_p + y_Ar
+    y_B = y_p + y_Br
+    
+    where:
+    y_A = vertical displacement at point A
+    y_B = vertical displacement at point B
+    y_p = vertical displacement due to pitch
+    y_Ar = vertical displacement due to roll at point A
+    y_Br = vertical displacement due to roll at point B
+    ```
+  </Step>
+  
+  <Step title="Calculate pitch displacement">
+    Observing the bar's movement relative to the ankle pivot point:
+    
+    ```r
+    y_p = d * tan(theta_p)
+    
+    where:
+    d = distance between pivot point and bar
+    theta_p = pitch rotation angle
+    ```
+  </Step>
+  
+  <Step title="Calculate roll displacement">
+    A negative roll causes point B to move down and point A to move up:
+    
+    ```r
+    y_Ar = -(c / 2) * sin(theta_r)
+    y_Br =  (c / 2) * sin(theta_r)
+    
+    where:
+    c = length of the bar
+    theta_r = roll rotation angle
+    ```
+  </Step>
+  
+  <Step title="Define motor-to-linkage relationship">
+    The motor rotations affect linkage height:
+    
+    ```r
+    y_A =   r_A * sin(theta_A)
+    y_B = - r_B * sin(theta_B)
+    
+    where:
+    r_A, r_B = radius of circular mount on motors
+    theta_A, theta_B = motor rotations
+    ```
+  </Step>
+  
+  <Step title="Combine equations">
+    ```r
+    r_A * sin(theta_A) = d * tan(theta_p) - (c / 2) * sin(theta_r)
+    sin(theta_A) = (d / r_A) * tan(theta_p) - (c / (2 * r_A)) * sin(theta_r)
+    
+    -r_B * sin(theta_B) = d * tan(theta_p) + (c / 2) * sin(theta_r)
+    sin(theta_B) = -(d / r_B) * tan(theta_p) - (c / (2 * r_B)) * sin(theta_r)
+    ```
+  </Step>
+  
+  <Step title="Apply small angle approximation">
+    For small angles, `sin(θ) ≈ θ` and `tan(θ) ≈ θ`:
+    
+    ```r
+    theta_A =   K_P * theta_p - K_R * theta_r
+    theta_B = - K_P * theta_p - K_R * theta_r
+    
+    where:
+    K_P = d / r  (pitch coupling constant)
+    K_R = c / (2 * r)  (roll coupling constant)
+    r = r_A = r_B  (assumed equal)
+    ```
+  </Step>
+</Steps>
+
+### Implementation Code
+
+The inverse kinematics implementation converts desired ankle pitch and roll to motor positions:
+
+```cpp
+// Convert pitch/roll to motor A and B positions
+float right_A = ANKLE_COUPLING_K_PITCH * right_pitch - ANKLE_COUPLING_K_ROLL * right_roll;
+float right_B = -ANKLE_COUPLING_K_PITCH * right_pitch - ANKLE_COUPLING_K_ROLL * right_roll;
+
+float left_A = ANKLE_COUPLING_K_PITCH * left_pitch - ANKLE_COUPLING_K_ROLL * left_roll;
+float left_B = -ANKLE_COUPLING_K_PITCH * left_pitch - ANKLE_COUPLING_K_ROLL * left_roll;
+```
+
+<Note>
+  Due to the mirrored rotation axis on the pitch ankle and asymmetrical linkages, the PR → AB equations are identical for both left and right legs.
+</Note>
+
+## Forward Kinematics: Motor Positions → Pitch/Roll
+
+### Mathematical Derivation
+
+<Warning>
+  We cannot simply invert the PR → AB equations because the mechanism maps two motor rotations to a combined pitch/roll state. Forward kinematics must be derived independently.
+</Warning>
+
+<Steps>
+  <Step title="Calculate pitch from midpoint">
+    The pitch rotation is determined by the midpoint of the bar:
+    
+    ```r
+    tan(theta_p) = y_mid / d
+    tan(theta_p) = (y_A + y_B) / (2 * d)  where y_mid = (y_A + y_B) / 2
+    
+    Expanding:
+    tan(theta_p) = (r_A * sin(theta_A) - r_B * sin(theta_B)) / (2 * d)
+    ```
+  </Step>
+  
+  <Step title="Calculate roll from differential">
+    Roll displacement is the vertical position relative to the midpoint:
+    
+    ```r
+    y_Ar = y_A - y_mid
+    
+    where:
+    y_Ar = -(c / 2) * sin(theta_r)
+    y_A = r_A * sin(theta_A)
+    y_mid = (y_A + y_B) / 2
+    ```
+  </Step>
+  
+  <Step title="Solve for roll angle">
+    With algebraic manipulation:
+    
+    ```r
+    y_A - ((y_A + y_B) / 2) = -(c / 2) * sin(theta_r)
+    (((y_A + y_B) / 2) - y_A) * (2 / c) = sin(theta_r)
+    sin(theta_r) = (-0.5y_A + 0.5y_B) * (2 / c)
+    sin(theta_r) = (-0.5 * r_A * sin(theta_A) + 0.5 * -r_B * sin(theta_B)) * (2 / c)
+    
+    Simplifying:
+    sin(theta_r) = -(1 / c) * (r_A * sin(theta_A) + r_B * sin(theta_B))
+    ```
+  </Step>
+  
+  <Step title="Apply small angle approximation">
+    Assuming `r = r_A = r_B`:
+    
+    ```r
+    theta_p = (r_A * theta_A - r_B * theta_B) / (2 * d)
+    theta_p = (theta_A - theta_B) * (r / (2 * d))
+    
+    theta_r = -(1 / c) * (r_A * theta_A + r_B * theta_B)
+    theta_r = -(theta_A + theta_B) * (r / c)
+    ```
+  </Step>
+</Steps>
+
+### Implementation Code
+
+The forward kinematics implementation converts motor positions to ankle pitch and roll:
+
+```cpp
+// Convert motor A and B positions to pitch/roll
+float right_pitch = (right_A - right_B) / (2.0f * K_PITCH);
+float right_roll =  -(right_A + right_B) / (2.0f * K_ROLL);
+
+float left_pitch = (left_A - left_B) / (2.0f * K_PITCH);
+float left_roll =  -(left_A + left_B) / (2.0f * K_ROLL);
+```
+
+## Coupling Constants
+
+The coupling constants relate the physical dimensions of the mechanism to the mathematical transformations:
+
+<Accordion title="K_P: Pitch Coupling Constant">
+  ```
+  K_P = d / r
+  ```
+  
+  Where:
+  - `d` = distance from ankle pivot to the bar
+  - `r` = radius of the motor's circular mount
+  
+  This constant determines how much motor rotation is needed to achieve a given pitch angle.
+</Accordion>
+
+<Accordion title="K_R: Roll Coupling Constant">
+  ```
+  K_R = c / (2 * r)
+  ```
+  
+  Where:
+  - `c` = length of the bar between connection points
+  - `r` = radius of the motor's circular mount
+  
+  This constant determines how much motor rotation is needed to achieve a given roll angle.
+</Accordion>
+
+<Note>
+  The actual values of `K_P` and `K_R` are determined by the physical dimensions of your specific ankle mechanism assembly. These should be measured or obtained from CAD models.
+</Note>
+
+## Key Insights
+
+<CardGroup cols={2}>
+  <Card title="Coupled System" icon="link">
+    Both motors affect both pitch and roll - they cannot be controlled independently.
+  </Card>
+  
+  <Card title="Symmetric Equations" icon="equals">
+    Due to mechanical symmetry, the same equations work for both left and right legs.
+  </Card>
+  
+  <Card title="Small Angle Approximation" icon="calculator">
+    The implementation assumes small angles (< 15°). For larger angles, use full trigonometric equations.
+  </Card>
+  
+  <Card title="No Singularities" icon="check">
+    The mechanism has no kinematic singularities within the normal operating range.
+  </Card>
+</CardGroup>
+
+## Implementation Considerations
+
+<Steps>
+  <Step title="Calibration">
+    Ensure motors A and B are properly zeroed at the neutral ankle position before using these transformations.
+  </Step>
+  
+  <Step title="Range Limits">
+    Both motors have ±70° range limits. Verify that commanded pitch/roll combinations don't exceed motor limits.
+  </Step>
+  
+  <Step title="Computational Efficiency">
+    The transformations use only basic arithmetic operations, making them suitable for real-time control loops.
+  </Step>
+  
+  <Step title="Accuracy">
+    For applications requiring high accuracy at large angles, implement the full trigonometric equations without small angle approximations.
+  </Step>
+</Steps>
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Motor Specifications" icon="motor" href="/hardware/motors">
+    Learn about the EC-A4310-P2-36 motors used in the ankle mechanism
+  </Card>
+  
+  <Card title="Mechanical Design" icon="cube" href="/hardware/mechanical-design">
+    View the complete mechanical assembly and joint specifications
+  </Card>
+</CardGroup>

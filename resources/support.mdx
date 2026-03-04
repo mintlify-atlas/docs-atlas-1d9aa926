@@ -1,0 +1,232 @@
+---
+title: Support
+description: Get help with your Asimov build and find support resources
+---
+
+# Support
+
+Need help with your Asimov project? We offer several channels to get you the support you need.
+
+## Getting Help
+
+<CardGroup cols={2}>
+  <Card title="Discord Community" icon="discord" href="https://discord.gg/HzDfGN7kUw">
+    Get real-time help from the community and Asimov team members
+  </Card>
+  
+  <Card title="GitHub Issues" icon="github" href="https://github.com/asimovinc/asimov-v0/issues">
+    Report bugs, request features, or search existing issues
+  </Card>
+  
+  <Card title="Early Supporter Program" icon="heart" href="https://asimov.inc/early">
+    Support development and get early access to updates and resources
+  </Card>
+  
+  <Card title="Partnerships" icon="handshake" href="mailto:hello@menlo.ai">
+    Contact us for commercial partnerships and collaborations
+  </Card>
+</CardGroup>
+
+## Support Options
+
+### Community Support
+
+The fastest way to get help is through our community channels:
+
+**Discord Community**
+- Real-time chat with builders and developers
+- Share photos and videos for troubleshooting
+- Get feedback on modifications and improvements
+- Connect with others working on similar challenges
+
+[Join Discord →](https://discord.gg/HzDfGN7kUw)
+
+**GitHub Issues**
+- Report technical bugs or design issues
+- Request new features or documentation
+- Search existing issues for solutions
+- Track issue resolution and updates
+
+[View Issues →](https://github.com/asimovinc/asimov-v0/issues)
+
+### Commercial Support
+
+**Early Supporter Program**
+
+Support the development of Asimov and gain access to:
+- Priority support channels
+- Early access to new designs and updates
+- Influence on future development priorities
+- Exclusive community events
+
+[Learn More →](https://asimov.inc/early)
+
+**Partnership Inquiries**
+
+For commercial partnerships, bulk orders, or custom development:
+
+- Email: hello@menlo.ai
+- Topics: Licensing, custom modifications, integration support, research collaboration
+
+## Frequently Asked Questions
+
+<AccordionGroup>
+  <Accordion title="What components do I need to build Asimov?">
+    You'll need:
+    - Motors from [Encos](http://encos.cn) (see specifications in Downloads)
+    - 3D printed parts (MJF recommended) or machined components
+    - Hardware (fasteners, bearings, etc.)
+    - Electronics (motor controllers, power supply, computing platform)
+    - Sensors (IMU, force sensors recommended)
+    
+    Full bill of materials discussions are available in the Discord community.
+  </Accordion>
+  
+  <Accordion title="What manufacturing methods are supported?">
+    Asimov v0 is designed to be compatible with:
+    - **MJF (Multi Jet Fusion) 3D printing** - Primary recommended method
+    - **SLS (Selective Laser Sintering)** - Alternative 3D printing method
+    - **CNC machining** - For metal components or higher strength requirements
+    - **FDM 3D printing** - Possible but may require reinforcement
+    
+    The design prioritizes low-volume manufacturing accessibility.
+  </Accordion>
+  
+  <Accordion title="Can I use different motors?">
+    Yes, but you'll need to:
+    - Verify torque and speed requirements match or exceed specifications
+    - Modify mounting interfaces if motor dimensions differ
+    - Update the MuJoCo simulation model with new motor parameters
+    - Test thoroughly before operation
+    
+    Share alternative motor configurations in the community to help others.
+  </Accordion>
+  
+  <Accordion title="What software do I need?">
+    For mechanical design:
+    - CAD software that supports STEP files (FreeCAD, Fusion 360, SolidWorks, etc.)
+    
+    For simulation:
+    - MuJoCo (free for personal and educational use)
+    - Python for control scripts
+    
+    For control:
+    - Your choice of robotics framework (ROS recommended)
+    - Motor controller software/firmware
+  </Accordion>
+  
+  <Accordion title="How much does it cost to build?">
+    Cost varies significantly based on:
+    - Component sourcing (motors are the primary cost)
+    - Manufacturing method chosen
+    - Electronics and computing hardware
+    - Location and shipping
+    
+    Community members have reported builds ranging from $5,000 to $15,000+ USD. Join Discord for current sourcing discussions and cost-saving tips.
+  </Accordion>
+  
+  <Accordion title="Can I sell robots built with Asimov designs?">
+    Yes! The CERN-OHL-S-2.0 license permits commercial use. However:
+    - You must provide complete source files to customers
+    - Modifications must be shared under the same license
+    - You cannot use Asimov or Menlo trademarks without permission
+    - No warranty is provided (AS-IS basis)
+    
+    For commercial partnerships or licensing questions, contact hello@menlo.ai
+  </Accordion>
+  
+  <Accordion title="What's the difference between left and right leg configurations?">
+    The legs are mechanically identical but mirrored. Key differences:
+    - Joint angle ranges are inverted (see specifications)
+    - Motor orientations are mirrored
+    - Mesh files and components are labeled left/right
+    
+    The design allows for symmetric gait patterns and balanced weight distribution.
+  </Accordion>
+  
+  <Accordion title="How do I report a safety issue?">
+    For safety-critical issues:
+    1. Email hello@menlo.ai immediately with "SAFETY" in the subject line
+    2. Do not publicly disclose until the issue is addressed
+    3. Provide detailed description, reproduction steps, and potential impact
+    
+    For general bugs, use GitHub Issues.
+  </Accordion>
+</AccordionGroup>
+
+## Before Asking for Help
+
+To get faster, more helpful responses:
+
+<Steps>
+  <Step title="Search Existing Resources">
+    Check Discord history, GitHub issues, and documentation for similar questions
+  </Step>
+  
+  <Step title="Gather Information">
+    Collect relevant details:
+    - What you're trying to accomplish
+    - What you've already tried
+    - Error messages or unexpected behavior
+    - Photos or videos showing the issue
+    - Your build configuration and modifications
+  </Step>
+  
+  <Step title="Ask Clearly">
+    Provide:
+    - Clear, specific question
+    - Context about your build
+    - What you've already tried
+    - Any relevant error messages or observations
+  </Step>
+</Steps>
+
+## Troubleshooting Resources
+
+### Mechanical Issues
+
+<CardGroup cols={2}>
+  <Card title="Joint Naming Convention" icon="tag">
+    Reference the naming_convention.png in the mechanical folder to ensure correct assembly
+  </Card>
+  
+  <Card title="Ankle Mechanism" icon="book-open">
+    Review the ankle_mechanism.md documentation for RSU joint assembly details
+  </Card>
+  
+  <Card title="3D Visualization" icon="cube" href="https://static.asimov.inc/ASV0_LowerBody.HTML">
+    Use the interactive 3D view to verify component orientation and assembly
+  </Card>
+  
+  <Card title="STL Mesh Files" icon="shapes">
+    Verify individual components against STL files for manufacturing accuracy
+  </Card>
+</CardGroup>
+
+### Simulation Issues
+
+- **Model won't load**: Check that all mesh files are in the correct paths relative to asimov.xml
+- **Unstable simulation**: Verify joint limits, masses, and inertial properties
+- **Unexpected behavior**: Compare against reference motor specifications and torque limits
+
+### Common Build Issues
+
+- **Tolerance problems**: Adjust for your specific manufacturing process (3D printing often requires tolerance compensation)
+- **Motor fit**: Verify motor dimensions match specifications before manufacturing
+- **Joint binding**: Check alignment, ensure no interference between components
+- **Weight distribution**: Verify pelvis mounting and load distribution
+
+<Warning>
+  Always test mechanical assemblies and software in a safe environment. Bipedal robots can generate significant forces. Implement proper safety measures, emergency stops, and never operate near people without extensive testing.
+</Warning>
+
+## Additional Resources
+
+- **Website**: [asimov.inc](https://asimov.inc)
+- **Source Code**: [github.com/asimovinc/asimov-v0](https://github.com/asimovinc/asimov-v0)
+- **Partnerships**: hello@menlo.ai
+- **Support Development**: [asimov.inc/early](https://asimov.inc/early)
+
+<Tip>
+  When asking for help in Discord, use descriptive thread titles and include photos/videos when possible. This helps others with similar issues find solutions later!
+</Tip>

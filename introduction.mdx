@@ -1,0 +1,148 @@
+---
+title: Introduction
+description: An open-source bipedal robotic leg platform for humanoid robots
+---
+
+<img
+  src="/images/asimov-legs-repo-v0.png"
+  alt="Asimov Legs"
+/>
+
+## What is Asimov?
+
+Asimov v0 is a complete bipedal leg system for humanoid robots, designed and built by Menlo Research as an open-source platform. It represents a practical approach to building humanoid robot legs using off-the-shelf components and manufacturing processes suitable for low-volume production.
+
+<Note>
+  Asimov is fully open-source, including mechanical designs, simulation models, and control algorithms. The project is designed to be accessible to researchers, hobbyists, and companies looking to build or prototype humanoid robots.
+</Note>
+
+## Key Features
+
+Asimov v0 is engineered with several advanced features that make it a capable platform for bipedal robotics:
+
+<CardGroup cols={2}>
+  <Card title="12 DOF Actuation" icon="gear">
+    Six degrees of freedom per leg, providing the full range of motion needed for natural walking, running, and dynamic movements.
+  </Card>
+  <Card title="RSU Ankle Mechanism" icon="robot">
+    Revolutionary Spherical Universal ankle design that provides exceptional dexterity and stability while maintaining a compact form factor.
+  </Card>
+  <Card title="Articulated Toe" icon="shoe-prints">
+    Each foot features an articulated toe joint with passive compliance, enabling more natural gait patterns and improved energy efficiency.
+  </Card>
+  <Card title="MJF 3D Printing Compatible" icon="cube">
+    All structural components are optimized for Multi Jet Fusion (MJF) 3D printing, making the design accessible for low-volume manufacturing.
+  </Card>
+</CardGroup>
+
+### Degrees of Freedom Breakdown
+
+Each leg consists of six actuated joints:
+
+- **Hip Pitch** - Flexion and extension movements (forward/backward swing)
+- **Hip Roll** - Abduction and adduction movements (lateral sway)
+- **Hip Yaw** - Internal and external rotation
+- **Knee Pitch** - Flexion and extension (leg bending)
+- **Ankle Pitch (A)** - Dorsiflexion and plantarflexion via coupled mechanism
+- **Ankle Roll (B)** - Inversion and eversion via coupled mechanism
+- **Toe** - Passive spring-loaded articulation
+
+<Accordion title="Understanding the RSU Ankle Mechanism">
+  The Revolute Spherical Universal (RSU) ankle mechanism is a key innovation in Asimov v0. Unlike direct-drive ankles, the RSU design uses two motors (A and B) connected through parallel linkages to control both pitch and roll movements.
+  
+  This coupled mechanism provides:
+  - Reduced weight at the end of the leg
+  - Better force distribution
+  - Compact packaging
+  - High torque capacity for both pitch and roll
+  
+  The conversion between ankle pitch/roll and motor positions A/B is handled through kinematic coupling equations. See the [Specifications](/specifications) page for detailed formulas.
+</Accordion>
+
+## Use Cases and Applications
+
+Asimov v0 is designed to support a wide range of applications in bipedal robotics research and development:
+
+### Research & Development
+- **Locomotion Research** - Study bipedal walking, running, and dynamic balance algorithms
+- **Control Systems** - Develop and test advanced control strategies for humanoid robots
+- **Machine Learning** - Train reinforcement learning agents for bipedal locomotion
+- **Gait Analysis** - Investigate biomechanics and energy-efficient walking patterns
+
+### Prototyping & Production
+- **Humanoid Robot Development** - Use as a reference design or direct integration into full humanoid platforms
+- **Service Robots** - Build mobile robots for tasks requiring human-like mobility
+- **Entertainment & Research Platforms** - Create demonstration platforms or educational tools
+
+### Education
+- **Robotics Education** - Teach principles of legged robotics, kinematics, and control
+- **Open-Source Community** - Contribute to and learn from an active development community
+
+## Manufacturing Approach
+
+<Note>
+  Asimov v0 is specifically designed to be manufacturable with accessible technologies and off-the-shelf components.
+</Note>
+
+The design philosophy prioritizes:
+
+1. **MJF 3D Printing** - All structural parts are optimized for Multi Jet Fusion additive manufacturing
+2. **Off-the-Shelf Motors** - Uses Encos actuators that can be sourced commercially
+3. **Standard Fasteners** - Common screws, bearings, and hardware components
+4. **Low-Volume Production** - Designed for small batch manufacturing rather than mass production
+
+This approach makes Asimov accessible to research labs, startups, and individual makers without requiring specialized manufacturing equipment or large-scale production facilities.
+
+## Getting Started
+
+To begin working with Asimov v0:
+
+<Steps>
+  <Step title="Review Specifications">
+    Familiarize yourself with the [joint specifications](/specifications), range of motion, and torque capabilities to understand the platform's capabilities.
+  </Step>
+  <Step title="Explore the Mechanical Design">
+    Access the full mechanical CAD files and assembly instructions in the [GitHub repository](https://github.com/asimovinc/asimov-v0/tree/main/mechanical).
+  </Step>
+  <Step title="Set Up Simulation">
+    Use the provided MuJoCo simulation model to test control algorithms before working with physical hardware.
+  </Step>
+  <Step title="Source Components">
+    Identify and source the required motors, fasteners, and 3D printing services for your build.
+  </Step>
+</Steps>
+
+## Community and Support
+
+Asimov is an open-source project maintained by Menlo Research with support from a growing community:
+
+<CardGroup cols={2}>
+  <Card title="Website" icon="globe" href="https://asimov.inc">
+    Official project website with latest updates and resources
+  </Card>
+  <Card title="Discord Community" icon="discord" href="https://discord.gg/HzDfGN7kUw">
+    Join the community to ask questions, share projects, and collaborate
+  </Card>
+  <Card title="GitHub Repository" icon="github" href="https://github.com/asimovinc/asimov-v0">
+    Access all source files, CAD models, and simulation code
+  </Card>
+  <Card title="Early Access Support" icon="heart" href="https://asimov.inc/early">
+    Support development and get early access to updates
+  </Card>
+</CardGroup>
+
+## Project Background
+
+Asimov v0 is developed by **Menlo Research**, a robotics research organization dedicated to advancing humanoid robotics through open-source collaboration. By making the complete design files and specifications publicly available, the project aims to accelerate innovation in bipedal robotics and make humanoid robot development more accessible to the wider robotics community.
+
+<Note>
+  For partnerships and commercial inquiries, contact: hello@menlo.ai
+</Note>
+
+## Next Steps
+
+Ready to dive deeper? Explore the detailed technical specifications:
+
+<Card title="View Complete Specifications" icon="book" href="/specifications">
+  Joint ranges, torque specifications, motor models, and kinematic parameters
+</Card>
